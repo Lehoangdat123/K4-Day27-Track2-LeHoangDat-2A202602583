@@ -1,3 +1,5 @@
+import sys
+
 from api import Verdict
 
 
@@ -106,6 +108,7 @@ def check_contract_checkpoint(payload, ctx):
 
 
 def check_lineage_run(payload, ctx):
+    print("LINEAGE PAYLOAD:", sorted(payload.keys()), file=sys.stderr)
     run_id = payload.get("run_id")
     if not run_id:
         return make_verdict(False, "lineage", "Missing run_id")
@@ -168,13 +171,6 @@ def check_feature_materialization(payload, ctx):
 
     shift = result.get("mean_shift_sigma")
     threshold = ctx.baseline["feature_mean_shift_sigma_max"]
-
-    import sys
-    print(
-        f"[feature_drift] ref={ref!r}, "
-        f"shift={shift!r}, baseline={threshold!r}",
-        file=sys.stderr,
-    )
 
     if shift is not None and shift > threshold:
         return make_verdict(
